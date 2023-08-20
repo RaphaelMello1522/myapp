@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Card, Form, Button, Image } from 'react-bootstrap';
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import logoImage from '../assets/logoAlt.png';
+import { useNavigate } from 'react-router-dom';
 
 function Login(props) {
 const [validate, setValidated] = useState(false);
@@ -40,42 +42,43 @@ setValidated(false);
 alert(e.message);
 })
 }
+
+const navigate = useNavigate();
+
 return (
 <>
-{(user === null) && <Card style={{ margin: 24, }}>
+<div className='container-fluid' style={{backgroundImage: `url(${require("../assets/LogoAlt2.jpg")})`, backgroundSize: '120%', backgroundPosition: 'center', height : '100vh', width: 'auto'}}>
+{(user === null) && <Card className='mx-auto' style={{ width: 500 }}>
 <Card.Header>
-<Image src={'https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Nandos_logo.svg/1200px-Nandos_logo.svg.png'} style={{ width: 80, marginBottom: 8 }} />
-<h4>Admin Login</h4>
-<p style={{ marginTop: 8, fontSize: 12, color: '#A1A1A1' }}>If you're an admin of Nandos please login below. If you don't have  an account please contact your administrator to get a login.</p>
+<Image src={logoImage} style={{ width: 80, marginBottom: 8 }} />
+<h4>Login Administrativo</h4>
+<p style={{ marginTop: 8, fontSize: 12, color: '#A1A1A1' }}>Insira suas credênciais</p>
 </Card.Header>
 <Card.Body>
 <Form noValidate validated={validate} onSubmit={LoginButtonPressed}>
 <Form.Group className='mb-3' controlId='email'>
 <Form.Label>Email</Form.Label>
-<Form.Control type="email" placeholder='Enter admin email' size='md' />
-<Form.Control.Feedback type='invalid'>Email is required.</Form.Control.Feedback>
+<Form.Control type="email" placeholder='Insira seu email' size='md' />
+<Form.Control.Feedback type='invalid'>Email invalido.</Form.Control.Feedback>
 </Form.Group>
 <Form.Group className='mb-3' controlId='password'>
-<Form.Label>Password</Form.Label>
-<Form.Control type="password" placeholder='Enter password' size='md' />
-<Form.Control.Feedback type='invalid'>Password is required.</Form.Control.Feedback>
+<Form.Label>Senha</Form.Label>
+<Form.Control type="password" placeholder='Insira sua senha' size='md' />
+<Form.Control.Feedback type='invalid'>Senha invalida.</Form.Control.Feedback>
 </Form.Group>
 <Button variant='primary' type='submit' size='md' style={{ fontWeight: 'bold' }}>
-Login ❯
+Entrar ❯
 </Button>
 {/* <p>{user.email}</p> */}
 </Form>
 </Card.Body>
 <Card.Footer>
-<a href="/" style={{ marginTop: 8, fontSize: 12, }}>← Back to homepage</a>
+<a href="/" style={{ marginTop: 8, fontSize: 12, }}>← Voltar ao Inicio</a>
 </Card.Footer>
 </Card>}
-{(user !== null) && <div style={{ margin: 24 }}>
-<p>You're loggedin successfully. Go to <a href="/dashboard">dashboard</a></p>
-<p><a onClick={
-LogoutButtonPressed
-}>Logout</a></p>
-</div>}
+{(user !== null)}
+{navigate("/dashboard")}
+</div>
 </>
 );
 }

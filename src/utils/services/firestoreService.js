@@ -23,4 +23,29 @@ function AddNewMenuItem(itemName, itemCategory, itemPrice) {
        reject(e);
     })
     })}
-    export default { GetAllMenuItems, AddNewMenuItem }
+
+    function UpdateMenuItem(menuItemId, itemName, itemCategory, itemPrice){
+        return new Promise((resolve, reject) => {
+            const data = {
+                "NomeItem": itemName,
+                "CategoriaItem": itemCategory,
+                "PrecoItem": itemPrice
+            }
+            db.collection("MenuItens").doc(menuItemId).update(data).then(() => {
+                resolve()
+            }).catch((e) => {
+                reject(e)
+            })
+        })
+    }
+
+    function DeleteMenuItem(menuItemId){
+        return new Promise((resolve, reject) => {
+            db.collection("MenuItens").doc(menuItemId).delete().then(() => {
+                resolve()
+            }).catch((e) => {
+                reject(e)
+            })
+         })
+    }
+    export default { GetAllMenuItems, AddNewMenuItem, UpdateMenuItem, DeleteMenuItem }

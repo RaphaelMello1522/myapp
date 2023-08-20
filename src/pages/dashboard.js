@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Table, Card, Image, Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 import NoLoggedInView from "../components/notLoggedView";
 import firebase from "firebase";
+import 'firebase/auth';
 import firestoreService from "../utils/services/firestoreService";
+import logoImage from '../assets/logo.png';
 
 function Dashboard(props) {
 
@@ -16,18 +18,25 @@ function Dashboard(props) {
     })
 
     const [ showAddEditForm, setShowAddEditForm] = useState(false);
-    const [ AddEditForm, setAddEditForm] = useState('add');
+    const [ AddEditForm, setAddEditForm] = useState('Add');
     const [menuItens, setMenuItens] = useState([]);
     const [showDeleteDialogue, setShowDeleteDialogue] = useState(false);
+    const [currentMenuItemId, setCurrentMenuItemId] = useState("");
+
     const [currentMenuItem, setCurrentMenuItem] = useState({
         "itemName": '',
         "itemCategory": '',
-        "itemPrice": 0
+        "itemPrice": '0'
         })
 
     const [ validated, setValidated] = useState(false);
+
     const handleModalClose = () => {
         setShowAddEditForm(false);
+        setShowDeleteDialogue(false);
+        setAddEditForm("Add");
+        setCurrentMenuItemId("");
+        setCurrentMenuItem({ "itemName": '', "itemCategory": '', "itemPrice": 0 })
     }
 
     const handleAddEditFormSubmit = (e) => {
@@ -37,19 +46,37 @@ function Dashboard(props) {
            if (AddEditForm === "Add") {
               firestoreService.AddNewMenuItem(itemName.value, itemCategory.value, itemPrice.value).then(() => {
               alert(`${itemName.value} is successfully added to the menu.`)
-              setCurrentMenuItem({ "itemName": '', "itemCategory": '', "itemPrice": 0 })
+              setCurrentMenuItem({ "itemName": '', "itemCategory": '', "itemPrice": '0' })
               handleModalClose();
               window.location.reload(false);
                 }).catch((e) => {
                     alert("Error occured: " + e.message);
                   })
-                  }}
+                  }
+                  else if(AddEditForm === "Edit")
+                  {firestoreService.UpdateMenuItem(currentMenuItemId, itemName.value, itemCategory.value, itemPrice.value).then(() => {
+                    alert(`${itemName.value} is successfully updated.`);
+                    setCurrentMenuItemId("");
+                    setCurrentMenuItem({ "itemName": '', "itemCategory": '', "itemPrice": 0 })
+                    handleModalClose();
+                    window.location.reload(false);
+                    }).catch((e) => {
+                    alert("Error occured: " + e.message);
+                    })
+                    }
+                }
                   setValidated(true)
                   }
 
 
     const handleMenuItemDelete = (e) => {
-        alert('Disponivel em breve');
+        firestoreService.DeleteMenuItem(currentMenuItemId).then(() => {
+          alert(`Deletion Successful`);
+          handleModalClose();
+          window.location.reload(false);
+        }).catch((e) => {
+          alert("Error occured: " + e.message);
+        })
     }
 
     function fetchMenuItems() {
@@ -59,6 +86,17 @@ function Dashboard(props) {
         alert('erro ao buscar itens do menu')
     })
     }
+
+    const LogoutButtonPressed = () => {
+        firebase.auth().signOut().then(() => {
+        //Signout Successful
+        alert("Logout Successful");
+        setUser(null);
+        setValidated(false);
+        }).catch((e) => {
+        alert(e.message);
+        })
+        }
 
     useEffect(() => {
         if (user !== null) {
@@ -83,11 +121,24 @@ function Dashboard(props) {
                         </Modal.Header>
                         <Modal.Body>
                             <FloatingLabel controlId="itemName" label="Item Name" className="mb-3">
-                                <Form.Control required type='text' placeholder='Enter item name' size='md' />
+                                <Form.Control required type='text' placeholder='Enter item name' size='md' 
+                                    value={currentMenuItem?.itemName} onChange={(e) => {
+                                        setCurrentMenuItem({
+                                            "itemName": (e.target.value) ? e.target.value : '',
+                                            "itemCategory": currentMenuItem?.itemCategory,
+                                            "itemPrice": currentMenuItem?.itemPrice
+                                        })
+                                    }} />
                                 <Form.Control.Feedback type='invalid'>Item name is required</Form.Control.Feedback>
                             </FloatingLabel>
                             <FloatingLabel controlId="itemCategory" label="Item Category" className="mb-3" >
-                                <Form.Select>
+                                <Form.Select value={currentMenuItem?.itemCategory} onChange={(e) =>{
+                                    setCurrentMenuItem({
+                                        "itemName": currentMenuItem?.itemName,
+                                        "itemCategory": e.target.value,
+                                        "itemPrice": currentMenuItem?.itemPrice
+                                    })
+                                }}>
                                 {(menuItens) && (menuItens.map((menuCategory, index) => (
                                 <option key={index} value={menuCategory.doc.data.value.mapValue.fields.NomeItem.stringValue}>
                                 {menuCategory.doc.data.value.mapValue.fields.NomeItem.stringValue}</option>
@@ -95,7 +146,14 @@ function Dashboard(props) {
                                 </Form.Select>
                                 </FloatingLabel>
                             <FloatingLabel controlId="itemPrice" label="Price" className="mb-3">
-                                <Form.Control required type='text' placeholder='Enter item price' size='md' />
+                                <Form.Control required type='text' placeholder='Enter item price' size='md' 
+                                    value={currentMenuItem?.itemPrice} onChange={(e) => {
+                                        setCurrentMenuItem({
+                                            "itemName": currentMenuItem?.itemName,
+                                            "itemCategory": currentMenuItem?.itemCategory,
+                                            "itemPrice": e.target.value
+                                        })
+                                    }} />
                                 <Form.Control.Feedback type='invalid'>Item Price is required</Form.Control.Feedback>
                             </FloatingLabel>
                         </Modal.Body>
@@ -120,23 +178,23 @@ function Dashboard(props) {
                     </Modal.Footer>
                 </Modal>
                 {/* Delete Confirmation Dialogue END */}
-
                 <Card style={{ margin: 24 }}>
-                    <Card.Header className="d-flex justify-content-between align-items-center">
+                <a style={{textAlign: 'right'}} onClick={LogoutButtonPressed}>Encerrar Sessão</a>
+                    <Card.Header className="d-flex justify-content-between align-items-center" style={{backgroundColor: '#FF69B4'}}>
                         <div className="align-items-center" style={{ marginRight: 8 }}>
-                            <Image src={'https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Nandos_logo.svg/1200px-Nandos_logo.svg.png'} style={{ width: 80 }} />
-                            <h4 style={{ marginTop: 8, }}>Dashboard</h4>
+                            <Image src={logoImage} style={{ width: 25 }} />
+                            <h4 style={{ marginTop: 10 }}>Quadro de Atendimentos</h4>
                         </div>
-                        <Button onClick={() => {setShowAddEditForm(true)}} style={{ backgroundColor: '#000', borderWidth: 0, }}>Add New Item</Button>
+                        <Button onClick={() => {setShowAddEditForm(true)}} style={{ backgroundColor: '#000', borderWidth: 0, borderRadius: 20 }}>Novo Atendimento</Button>
                     </Card.Header>
                     <Card.Body>
                         <Table responsive>
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Item Name</th>
-                                    <th>Category</th>
-                                    <th>Price (USD)</th>
+                                    <th>Nome</th>
+                                    <th>Tipo de Atendimento</th>
+                                    <th>Preço</th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -149,11 +207,24 @@ function Dashboard(props) {
 <td>{menuItem.doc.data.value.mapValue.fields.PrecoItem.string ? menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue : menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue}</td>
 <td>
 <Button variant='primary' onClick={() => {
-alert("Edit functionality coming soon")
-}}>✎ Edit</Button>{' '}
+setCurrentMenuItemId(menuItem.doc.key.path.segments[menuItem.doc.key.path.segments.length - 1])
+setCurrentMenuItem({
+"itemName": menuItem.doc.data.value.mapValue.fields.NomeItem.stringValue,
+"itemCategory": menuItem.doc.data.value.mapValue.fields.CategoriaItem.stringValue,
+"itemPrice": menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue ? menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue : menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue
+})
+setAddEditForm("Edit");
+setShowAddEditForm(true);
+}}>✎ Editar</Button>
 <Button variant='danger' onClick={() => {
-alert("Delete functionality coming soon")
-}}>x Delete</Button>
+setCurrentMenuItemId(menuItem.doc.key.path.segments[menuItem.doc.key.path.segments.length - 1]);
+setCurrentMenuItem({
+"itemName": menuItem.doc.data.value.mapValue.fields.NomeItem.stringValue,
+"itemCategory": menuItem.doc.data.value.mapValue.fields.CategoriaItem.stringValue,
+"itemPrice": menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue
+});
+setShowDeleteDialogue(true);
+}}>x Remover</Button>
 </td>
 </tr>
 )))}
@@ -161,7 +232,7 @@ alert("Delete functionality coming soon")
                         </Table>
                     </Card.Body>
                     <Card.Footer className="d-flex justify-content-between align-items-center">
-                        <p style={{ marginTop: 8, fontSize: 12, color: '#A1A1A1' }}>Nandos Menu v1.0.0 - <a href="/login">Logout</a></p>
+                        <p style={{ marginTop: 8, fontSize: 12, color: '#A1A1A1' }}>Mello S.A v1.2.0 - <a href="/login">Encerrar Sessão</a></p>
                     </Card.Footer>
                 </Card>
             </>}</>

@@ -8,11 +8,11 @@ return (
 <Container>
 <Row className="align-items-center">
 <Col>
-<Image src={`${notLoggedInImage}`} style={{ width: '80%' }} />
+<Image src={`${notLoggedInImage}`} style={{ width: '100%'}} />
 </Col>
-<Col>
-<h1>Login Required</h1>
-<p>You're not logged in. Please <a href="/login">login</a> first as this access is limited.</p>
+<Col style={{marginBottom: 150}}>
+<h2>Você precisa de um login administrativo para acessar o quadro de atendimentos</h2>
+<p><a href='/login'>Se você tiver um acesso clique aqui para entrar</a></p>
 </Col>
 </Row>
 </Container>
