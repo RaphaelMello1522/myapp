@@ -47,7 +47,7 @@ const navigate = useNavigate();
 
 return (
 <>
-{(user === null) && <Card className='mx-auto' style={{ width: 500 }}>
+{(user === null) && <Card className='mx-auto' style={{ width: 'auto', height: 'auto' }}>
 <Card.Header>
 <Image src={logoImage} style={{ width: 80, marginBottom: 8 }} />
 <h4>Login Administrativo</h4>

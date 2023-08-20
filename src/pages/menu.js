@@ -15,7 +15,7 @@ function Menu(props){
     }, [])
     return (
 <>
-<Card className="mx-auto" style={{ margin: 24, maxWidth: 767 }}>
+<Card className="mx-auto" style={{ margin: 24, width: 'auto', height: 'auto' }}>
 <Card.Header className="d-flex justify-content-center align-items-center">
 <div style={{ marginRight: 8 }}>
 <Image src={imageLogo} style={{ width: 80 }} />

@@ -178,7 +178,7 @@ function Dashboard(props) {
                     </Modal.Footer>
                 </Modal>
                 {/* Delete Confirmation Dialogue END */}
-                <Card style={{ margin: 24 }}>
+                <Card style={{ margin: 24, width: 'auto', height: 'auto' }}>
                 <a style={{textAlign: 'right'}} onClick={LogoutButtonPressed}>Encerrar Sessão</a>
                     <Card.Header className="d-flex justify-content-between align-items-center" style={{backgroundColor: '#FF69B4'}}>
                         <div className="align-items-center" style={{ marginRight: 8 }}>
@@ -206,7 +206,7 @@ function Dashboard(props) {
 <td>{menuItem.doc.data.value.mapValue.fields.CategoriaItem.stringValue}</td>
 <td>{menuItem.doc.data.value.mapValue.fields.PrecoItem.string ? menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue : menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue}</td>
 <td>
-<Button variant='primary' onClick={() => {
+<Button onClick={() => {
 setCurrentMenuItemId(menuItem.doc.key.path.segments[menuItem.doc.key.path.segments.length - 1])
 setCurrentMenuItem({
 "itemName": menuItem.doc.data.value.mapValue.fields.NomeItem.stringValue,
@@ -215,7 +215,7 @@ setCurrentMenuItem({
 })
 setAddEditForm("Edit");
 setShowAddEditForm(true);
-}}>✎ Editar</Button>
+}}>✎</Button>
 <Button variant='danger' onClick={() => {
 setCurrentMenuItemId(menuItem.doc.key.path.segments[menuItem.doc.key.path.segments.length - 1]);
 setCurrentMenuItem({
@@ -224,7 +224,7 @@ setCurrentMenuItem({
 "itemPrice": menuItem.doc.data.value.mapValue.fields.PrecoItem.stringValue
 });
 setShowDeleteDialogue(true);
-}}>x Remover</Button>
+}}><span className="bi bi-trash"></span>X</Button>
 </td>
 </tr>
 )))}

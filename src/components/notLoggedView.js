@@ -5,7 +5,7 @@ import notLoggedInImage from '../assets/23988775.jpg'
 function NoLoggedInView(props) {
 return (
 <>
-<Container>
+<Container style={{width: 'auto', height: 'auto'}}>
 <Row className="align-items-center">
 <Col>
 <Image src={`${notLoggedInImage}`} style={{ width: '100%'}} />
