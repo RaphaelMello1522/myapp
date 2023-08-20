@@ -47,7 +47,6 @@ const navigate = useNavigate();
 
 return (
 <>
-<div className='container-fluid' style={{backgroundImage: `url(${require("../assets/LogoAlt2.jpg")})`, backgroundSize: '120%', backgroundPosition: 'center', height : '100vh', width: 'auto'}}>
 {(user === null) && <Card className='mx-auto' style={{ width: 500 }}>
 <Card.Header>
 <Image src={logoImage} style={{ width: 80, marginBottom: 8 }} />
@@ -78,7 +77,6 @@ Entrar ❯
 </Card>}
 {(user !== null)}
 {navigate("/dashboard")}
-</div>
 </>
 );
 }

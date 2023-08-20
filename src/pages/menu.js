@@ -15,13 +15,12 @@ function Menu(props){
     }, [])
     return (
 <>
-<Card style={{ margin: 24 }}>
-<Card.Header className="d-flex justify-content-between align-items-center">
+<Card className="mx-auto" style={{ margin: 24, maxWidth: 767 }}>
+<Card.Header className="d-flex justify-content-center align-items-center">
 <div style={{ marginRight: 8 }}>
 <Image src={imageLogo} style={{ width: 80 }} />
 </div>
 <h2>Quadro de Atendimentos</h2>
-<Button style={{ backgroundColor: '#BD2B2B', borderWidth: 0, }}>Solicitar Atendimento</Button>
 </Card.Header>
 <Card.Body>
 <Table responsive>
